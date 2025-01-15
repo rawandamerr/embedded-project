@@ -1,14 +1,3 @@
-# embedded-project
-light detecting car
-//Ultrasonic  Trig  RC6 ,, Echo RC7
-// SERVO PIN RC2
-// PWM  EN MOTORS RC1
-// DiRECTION PINS RB0 , RB1 , RB2 , RB3
-// LDR RD0 , RD1 , RD2
-// Analog LDR RA0
-//Start  Buttno RD3
-//LEDS Pin RD6, RD7
-
 int tick;
 int tick1;
 unsigned int sensor_voltage;
@@ -75,20 +64,15 @@ void main() {
      a=0;
      while(1){
         PORTD=PORTD & 0B11011111;
-        check_start();
 
              while(b){
              PORTD=PORTD | 0B00100000;
              check_front_right();
-             check_start();
              check_front_left();
-             check_start();
              check_front();
-             check_start();
              adjust_position();
-             check_start();
              ENDD();
-             check_start();
+
  }                    }
 }
 
@@ -134,7 +118,7 @@ void interrupt(){
        check_start();
        INTCON = INTCON & 0xFB;//Clear T0IF
        }
-       
+
 if(PIR1&0x04){//CCP1 interrupt
    if(a==1){                                           // CCP1 interrupt
              if(H_L){                                // high
@@ -217,6 +201,8 @@ stop_moving();
 }
 }
 
+
+
 void check_front(){
 while(!(PORTD & 0b00000100)){
 sensor_voltage = ATD_read_A0();
@@ -236,6 +222,7 @@ sensor_voltage = ATD_read_A0();
  }else{move_forward();}
   if(PORTD & 0b00000100){break;}
  }
+ 
  if(sensor_voltage <= 100) {break;}
  if(PORTD & 0b00000100){break;} }
 
@@ -321,15 +308,15 @@ a=0;
 
 int dist(){
     int d = 0;
-    T1CON = 0x10; // Use internal clock, no prescaler
+    T1CON = 0x10; // prescale 1/2
     mymsDelay(200);
 
-    T1CON = 0x10;
+
     TMR1H = 0;                  // Reset Timer1
     TMR1L = 0;
 
     PORTC = PORTC | 0b01000000; // Trigger HIGH
-    delay_us(10);               // 10 µs delay
+    mymsDelay(1);               // 1 µs delay
     PORTC = PORTC & 0b10111111; // Trigger LOW
 
     while (!(PORTC & 0b10000000));
